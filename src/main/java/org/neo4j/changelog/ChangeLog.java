@@ -76,9 +76,7 @@ public class ChangeLog {
 
             w.write(String.format(VERSION_FMT, version));
 
-            if (!categories.contains(catchAllSubHeader)) {
-                categories.add(catchAllSubHeader);
-            }
+            categories.add(catchAllSubHeader);
 
             for (String category: categories) {
                 List<Change> changes = defaultGet(catMap, category, ArrayList::new);
@@ -90,15 +88,7 @@ public class ChangeLog {
 
                 w.write(String.format(CATEGORY_FMT, category));
 
-                changes.sort((c1, c2) -> {
-                    if (c1.getSortingNumber() == c2.getSortingNumber()) {
-                        return 0;
-                    } else if (c1.getSortingNumber() < c2.getSortingNumber()) {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                });
+                changes.sort(Comparator.comparingInt(Change::getSortingNumber));
 
                 for (Change change: changes) {
                     w.write(String.format(CHANGE_FMT, change.toString()));

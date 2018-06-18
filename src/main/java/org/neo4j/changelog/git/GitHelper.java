@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 public class GitHelper {
     private static final String GITHUB_COMMIT_LINK = "https://github.com/%s/%s/commit/%s";
-    static Pattern VERSION_TAG_PATTERN = Pattern.compile("^v?[\\d\\.]+");
+    private static final Pattern VERSION_TAG_PATTERN = Pattern.compile("^v?[\\d.]+");
     private final Git git;
     private final Repository repo;
     private final GitConfig config;
@@ -348,7 +348,7 @@ public class GitHelper {
         if (globalConfig.getGithubConfig().hasUserAndRepo()) {
             // Can format links to commits
             additions.add(String.format("[%s](%s)", revCommit.abbreviate(7).name(),
-                    formatCommitLink(globalConfig.getGithubConfig().getUser(),
+                    formatCommitLink(globalConfig.getGithubConfig().getUsers().get(0), // TODO:
                             globalConfig.getGithubConfig().getRepo(),
                             revCommit.getId().name())));
         } else {

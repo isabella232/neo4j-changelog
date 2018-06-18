@@ -18,10 +18,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -75,7 +72,7 @@ public class GitHelperTest {
         List<Ref> tags = gitHelper.getVersionTags();
         assertTrue(tags.size() > 1);
         // either 1.2.3 or v1.2.3 is ok
-        Pattern pattern = Pattern.compile("^v?[\\d\\.]+$");
+        Pattern pattern = Pattern.compile("^v?[\\d.]+$");
         tags.stream().allMatch(ref -> pattern.asPredicate().test(ref.getName()));
     }
 

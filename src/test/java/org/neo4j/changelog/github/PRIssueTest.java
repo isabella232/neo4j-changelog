@@ -39,7 +39,7 @@ public class PRIssueTest {
         assertTrue(pr.getVersionFilter().isEmpty());
         assertEquals(Arrays.asList("kernel", "cypher"),
                 pr.getLabelFilter());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class PRIssueTest {
         PRIssue pr = getPrIssue(1, "title", "body");
 
         assertTrue(pr.getVersionFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class PRIssueTest {
         PRIssue pr = getPrIssue(1, "title", "body", "http://test.com/link", true);
 
         assertTrue(pr.getVersionFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link) ([spacecowboy](http://space))", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link) ([spacecowboy](http://space))", pr.getChangeTextHeader());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getLabelFilter().isEmpty());
         assertTrue(pr.getVersionFilter().isEmpty());
-        assertEquals("Message follows" + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Message follows" + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PRIssueTest {
         assertTrue(pr.getLabelFilter().isEmpty());
         assertTrue(pr.getVersionFilter().isEmpty());
         assertEquals("Message follows" + " [\\#1](http://test.com/link) ([spacecowboy](http://space))",
-                pr.getChangeText());
+                pr.getChangeTextHeader());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class PRIssueTest {
         assertTrue(pr.getLabelFilter().isEmpty());
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class PRIssueTest {
         assertTrue(pr.getLabelFilter().isEmpty());
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
-        assertEquals("Message follows" + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Message follows" + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class PRIssueTest {
                 pr.getVersionFilter());
         assertEquals(Arrays.asList("kernel", "cypher"),
                 pr.getLabelFilter());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class PRIssueTest {
                 "changelog: " + clText);
 
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(clFirstLine + " [\\#1](http://test.com/link)\n\n" + clRestIndented, pr.getChangeText());
+        assertEquals(clFirstLine + " [\\#1](http://test.com/link)\n\n" + clRestIndented, pr.getChangeTextHeader());
     }
 
     @Test
@@ -181,7 +181,7 @@ public class PRIssueTest {
                 "changelog: " + clText);
 
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(clFirstLine + " [\\#1](http://test.com/link)\n\n    " + clSecondLine, pr.getChangeText());
+        assertEquals(clFirstLine + " [\\#1](http://test.com/link)\n\n    " + clSecondLine, pr.getChangeTextHeader());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -205,7 +205,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -217,7 +217,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
 
         pr = getPrIssue(1, "", "Blab la\n" +
                 "balb lba\n" +
@@ -226,7 +226,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
 
         pr = getPrIssue(1, "", "Blab la\n" +
                 "balb lba\n" +
@@ -235,7 +235,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals(pr.title + " [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -246,7 +246,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -257,7 +257,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -268,7 +268,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -279,7 +279,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -290,7 +290,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Body text [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -301,7 +301,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Really tricky text: with colon [and] brackets [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Really tricky text: with colon [and] brackets [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -320,7 +320,7 @@ public class PRIssueTest {
                 pr.getVersionFilter());
         assertEquals(Arrays.asList("kernel", "cypher"),
                 pr.getLabelFilter());
-        assertEquals("My change text follows here [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("My change text follows here [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -337,7 +337,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.1", "2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("Really tricky text: with [a] bracket [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("Really tricky text: with [a] bracket [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -354,7 +354,7 @@ public class PRIssueTest {
         assertEquals(Arrays.asList("2.1", "2.2", "2.3"),
                 pr.getVersionFilter());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("My change text follows here [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("My change text follows here [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     @Test
@@ -366,7 +366,7 @@ public class PRIssueTest {
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertTrue(pr.getLabelFilter().isEmpty());
-        assertEquals("pr title [\\#1](http://test.com/link)", pr.getChangeText());
+        assertEquals("pr title [\\#1](http://test.com/link)", pr.getChangeTextHeader());
     }
 
     private PRIssue getPrIssue(int number, String title, String body) {

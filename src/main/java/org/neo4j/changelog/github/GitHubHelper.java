@@ -8,10 +8,7 @@ import retrofit2.Response;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -24,16 +21,16 @@ public class GitHubHelper {
     private static Pattern PAGE_PATTERN = Pattern.compile("page=([0-9]+)>");
 
     private final GitHubService service;
-    private final String user;
+    private final List<String> users;
     private final String repo;
     @Nonnull
     private final GithubLabelsConfig labels;
     private final boolean includeAuthor;
 
-    public GitHubHelper(@Nonnull String token, @Nonnull String user, @Nonnull String repo, boolean includeAuthor,
+    public GitHubHelper(@Nonnull String token, @Nonnull List<String> users, @Nonnull String repo, boolean includeAuthor,
                         @Nonnull GithubLabelsConfig labels) {
         service = GitHubService.GetService(token);
-        this.user = user;
+        this.users = users;
         this.repo = repo;
         this.labels = labels;
         this.includeAuthor = includeAuthor;
@@ -80,42 +77,48 @@ public class GitHubHelper {
 
             @Override
             public String toString() {
-                return pr.getChangeText();
+                return pr.getChangeTextHeader();
             }
         };
     }
 
     @Nonnull
     public List<PullRequest> getChangeLogPullRequests() {
-        List<GitHubService.Issue> issues = listChangeLogIssues();
+        List<PullRequest> issues = new ArrayList<>();
+        for (String user : users) {
+            List<PRIssue> collect = listChangeLogIssues(user).stream()
+                    // Only consider pull requests, not issues
+                    .filter(i -> i.pull_request != null)
+                    // Can not have any of the exclusion labels
+                    .filter(i -> Collections.disjoint(labels.getExclude(),
+                            i.labels.stream().map(l -> l.name).collect(Collectors.toList())))
+                    // Can only be unlabeled if that is allowed
+                    .filter(i -> !(labels.getExcludeUnlabeled() && i.labels.isEmpty()))
+                    // Must contain one of the inclusion labels
+                    .filter(i -> {
+                        // either the no inclusion labels have been specified
+                        return labels.getInclude().isEmpty() ||
+                                // or one of the labels are present in the inclusion list
+                                !Collections.disjoint(labels.getInclude(),
+                                        i.labels.stream().map(l -> l.name).collect(Collectors.toList()));
+                    })
+                    .map(issue -> {
+                        GitHubService.PR pr = getPr(user, issue.number);
+                        return new PRIssue(issue, pr, labels.getCategoryMap(), includeAuthor);
+                    })
+                    .filter(pr -> isIncludedInVersion(pr, labels.getVersionPrefix()))
+                    .collect(Collectors.toList());
+            System.out.println("Fetched " + collect.size() + "issues from " + user);
+            issues.addAll(collect);
+        }
+
         System.out.println("Fetched " + issues.size() + " issues");
 
-        return issues.parallelStream()
-                     // Only consider pull requests, not issues
-                     .filter(i -> i.pull_request != null)
-                     // Can not have any of the exclusion labels
-                     .filter(i -> Collections.disjoint(labels.getExclude(),
-                             i.labels.stream().map(l -> l.name).collect(Collectors.toList())))
-                     // Can only be unlabeled if that is allowed
-                     .filter(i -> !(labels.getExcludeUnlabeled() && i.labels.isEmpty()))
-                     // Must contain one of the inclusion labels
-                     .filter(i -> {
-                         // either the no inclusion labels have been specified
-                         return labels.getInclude().isEmpty() ||
-                                 // or one of the labels are present in the inclusion list
-                                 !Collections.disjoint(labels.getInclude(),
-                                         i.labels.stream().map(l -> l.name).collect(Collectors.toList()));
-                     })
-                     .map(issue -> {
-                         GitHubService.PR pr = getPr(issue.number);
-                         return new PRIssue(issue, pr, labels.getCategoryMap(), includeAuthor);
-                     })
-                     .filter(pr -> isIncludedInVersion(pr, labels.getVersionPrefix()))
-                     .collect(Collectors.toList());
+        return issues;
     }
 
     @Nonnull
-    private GitHubService.PR getPr(int number) {
+    private GitHubService.PR getPr(String user, int number) {
         try {
             Call<GitHubService.PR> call = service.getPR(user, repo, number);
             Response<GitHubService.PR> response = call.execute();
@@ -129,13 +132,12 @@ public class GitHubHelper {
     }
 
     @Nonnull
-    private List<GitHubService.Issue> listChangeLogIssues() {
+    private List<GitHubService.Issue> listChangeLogIssues(String user) {
         List<GitHubService.Issue> issues = new LinkedList<>();
 
         OptionalInt nextPage = OptionalInt.of(1);
         while (nextPage.isPresent()) {
-            //noinspection OptionalGetWithoutIsPresent (while statement is not picked up by intellij)
-            Response<List<GitHubService.Issue>> response = listChangeLogIssues(nextPage.getAsInt());
+            Response<List<GitHubService.Issue>> response = listChangeLogIssues(user, nextPage.getAsInt());
             issues.addAll(response.body());
             nextPage = getNextPage(response);
         }
@@ -144,7 +146,7 @@ public class GitHubHelper {
     }
 
     @Nonnull
-    private Response<List<GitHubService.Issue>> listChangeLogIssues(int page) {
+    private Response<List<GitHubService.Issue>> listChangeLogIssues(String user, int page) {
         try {
             Call<List<GitHubService.Issue>> call = service.listChangeLogIssues(user, repo, labels.getRequired(), page);
             Response<List<GitHubService.Issue>> response = call.execute();

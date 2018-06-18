@@ -6,11 +6,7 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
-import org.neo4j.changelog.config.ConfigReader;
-import org.neo4j.changelog.config.GitCommitConfig;
-import org.neo4j.changelog.config.GithubConfig;
-import org.neo4j.changelog.config.GithubLabelsConfig;
-import org.neo4j.changelog.config.ProjectConfig;
+import org.neo4j.changelog.config.*;
 import org.neo4j.changelog.git.GitHelper;
 import org.neo4j.changelog.github.GitHubHelper;
 import org.neo4j.changelog.github.PullRequest;
@@ -22,16 +18,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Main {
 
-    public static final String IGNORE = "ignore";
+    private static final String IGNORE = "ignore";
     private final ProjectConfig config;
 
-    public Main(@Nonnull ProjectConfig config) throws IOException {
+    private Main(@Nonnull ProjectConfig config) throws IOException {
         this.config = config;
     }
 
@@ -161,7 +158,7 @@ public class Main {
                            return false;
                        })
                        .map(c -> subChange(c, subProjectConfig, gitHelper, subTags, orgVersionTags))
-                       .filter(c -> c != null)
+                       .filter(Objects::nonNull)
                        .forEach(changeLog::addToChangeLog);
             }
 
@@ -174,7 +171,7 @@ public class Main {
                             .filter(pr -> gitHelper.isAncestorOfToRef(pr.getCommit()) &&
                                     !gitHelper.isAncestorOfFromRef(pr.getCommit()))
                             .map(pr -> subChange(pr, subProjectConfig, gitHelper, subTags, orgVersionTags))
-                            .filter(pr -> pr != null)
+                            .filter(Objects::nonNull)
                             .forEach(changeLog::addToChangeLog);
             }
         }
@@ -197,7 +194,7 @@ public class Main {
         }
         final String motherVersion = m.group(1);
 
-        if (!orgVersionTags.stream().filter(t -> motherVersion.equals(Util.getTagName(t))).findAny().isPresent()) {
+        if ( orgVersionTags.stream().noneMatch(t -> motherVersion.equals(Util.getTagName(t)))) {
             // Tag does not exist in mother project
             return null;
         }
@@ -222,7 +219,7 @@ public class Main {
         }
         final String motherVersion = m.group(1);
 
-        if (!orgVersionTags.stream().filter(t -> motherVersion.equals(Util.getTagName(t))).findAny().isPresent()) {
+        if ( orgVersionTags.stream().noneMatch(t -> motherVersion.equals(Util.getTagName(t)))) {
             // Tag does not exist in mother project
             return null;
         }
@@ -247,25 +244,25 @@ public class Main {
 
             @Override
             public String toString() {
-                return pr.getChangeText();
+                return pr.getChangeTextHeader();
             }
         };
     }
 
     private static List<PullRequest> getPullRequests(@Nonnull GithubConfig config) {
-        String user = config.getUser();
+        List<String> users = config.getUsers();
         String repo = config.getRepo();
         String token = config.getToken();
         GithubLabelsConfig labels = config.getLabels();
 
-        if (user.isEmpty() || repo.isEmpty()) {
+        if (users.isEmpty() || repo.isEmpty()) {
             System.out.println("Skipping pull requests since no github user/repo defined.");
             return Collections.emptyList();
         }
 
-        System.out.printf("Fetching pull requests from github.com/%s/%s\n", user,
+        System.out.printf("Fetching pull requests from github.com/%s/%s\n", users,
                 repo);
-        GitHubHelper gitHubHelper = new GitHubHelper(token, user, repo, config.getIncludeAuthor(), labels);
+        GitHubHelper gitHubHelper = new GitHubHelper(token, users, repo, config.getIncludeAuthor(), labels);
 
         List<PullRequest> pullRequests = gitHubHelper.getChangeLogPullRequests();
 

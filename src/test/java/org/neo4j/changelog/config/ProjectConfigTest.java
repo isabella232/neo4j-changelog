@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -35,7 +36,7 @@ public class ProjectConfigTest {
 
         StringBuilder tml = new StringBuilder()
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("[git]\n")
                 .append("to = 'abc'\n")
@@ -48,14 +49,14 @@ public class ProjectConfigTest {
     public void testMinimum() throws Exception {
         StringBuilder tml = new StringBuilder()
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("[git]\n")
                 .append("to = 'abc'\n");
 
         ProjectConfig c = ProjectConfig.from(Toml.read(tml.toString()));
 
-        assertEquals("jonas", c.getGithubConfig().getUser());
+        assertEquals(Collections.singletonList("jonas"), c.getGithubConfig().getUsers());
         assertEquals("neo4j", c.getGithubConfig().getRepo());
         assertEquals("abc", c.getGitConfig().getTo());
 
@@ -70,7 +71,7 @@ public class ProjectConfigTest {
     public void missingGitSection() throws Exception {
         StringBuilder tml = new StringBuilder()
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n");
 
         ProjectConfig.from(Toml.read(tml.toString()));
@@ -83,7 +84,7 @@ public class ProjectConfigTest {
         StringBuilder tml = new StringBuilder()
                 .append("git = 'bob'\n")
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n");
 
         ProjectConfig.from(Toml.read(tml.toString()));
@@ -108,7 +109,7 @@ public class ProjectConfigTest {
         StringBuilder tml = new StringBuilder()
                 .append("categories = 'justastring'\n")
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("[git]\n")
                 .append("to = 'abc'\n");
@@ -123,7 +124,7 @@ public class ProjectConfigTest {
         StringBuilder tml = new StringBuilder()
                 .append("subprojects = 1\n")
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("[git]\n")
                 .append("to = 'abc'\n");
@@ -135,7 +136,7 @@ public class ProjectConfigTest {
     public void testEmptySubProject() throws Exception {
         StringBuilder tml = new StringBuilder()
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("[git]\n")
                 .append("to = 'abc'\n")
@@ -148,7 +149,7 @@ public class ProjectConfigTest {
     public void testTokenCarriesThroughToSubProjects() throws Exception {
         StringBuilder tml = new StringBuilder()
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("token = 'supertoken'\n")
                 .append("[git]\n")
@@ -157,12 +158,12 @@ public class ProjectConfigTest {
                 .append("[subprojects.woho.git]\n")
                 .append("to = 'subabc'\n")
                 .append("[subprojects.woho.github]\n")
-                .append("user = 'subuser'\n")
+                .append("users = ['subuser']\n")
                 .append("repo = 'subrepo'\n");
 
         ProjectConfig c = ProjectConfig.from(Toml.read(tml.toString()));
 
-        assertEquals("jonas", c.getGithubConfig().getUser());
+        assertEquals(Collections.singletonList("jonas"), c.getGithubConfig().getUsers());
         assertEquals("neo4j", c.getGithubConfig().getRepo());
         assertEquals("abc", c.getGitConfig().getTo());
 
@@ -172,7 +173,7 @@ public class ProjectConfigTest {
 
         assertEquals("subabc", sub.getGitConfig().getTo());
         assertEquals("supertoken", sub.getGithubConfig().getToken());
-        assertEquals("subuser", sub.getGithubConfig().getUser());
+        assertEquals(Collections.singletonList("subuser"), sub.getGithubConfig().getUsers());
         assertEquals("subrepo", sub.getGithubConfig().getRepo());
     }
 
@@ -186,7 +187,7 @@ public class ProjectConfigTest {
                 .append("categories = ['one','two']\n")
                 // GITHUB
                 .append("[github]\n")
-                .append("user = 'jonas'\n")
+                .append("users = ['jonas']\n")
                 .append("repo = 'neo4j'\n")
                 .append("token = 'supertoken'\n")
                 .append("include_author = true\n")
@@ -211,12 +212,12 @@ public class ProjectConfigTest {
                 .append("[subprojects.woho.git]\n")
                 .append("to = 'subabc'\n")
                 .append("[subprojects.woho.github]\n")
-                .append("user = 'subuser'\n")
+                .append("users = ['subuser']\n")
                 .append("repo = 'subrepo'\n");
 
         ProjectConfig c = ProjectConfig.from(Toml.read(tml.toString()));
 
-        assertEquals("jonas", c.getGithubConfig().getUser());
+        assertEquals(Collections.singletonList("jonas"), c.getGithubConfig().getUsers());
         assertEquals("neo4j", c.getGithubConfig().getRepo());
         assertEquals("supertoken", c.getGithubConfig().getToken());
         assertEquals(true, c.getGithubConfig().getIncludeAuthor());
@@ -246,7 +247,7 @@ public class ProjectConfigTest {
 
         assertEquals("subabc", sub.getGitConfig().getTo());
         assertEquals("supertoken", sub.getGithubConfig().getToken());
-        assertEquals("subuser", sub.getGithubConfig().getUser());
+        assertEquals(Collections.singletonList("subuser"), sub.getGithubConfig().getUsers());
         assertEquals("subrepo", sub.getGithubConfig().getRepo());
     }
 }

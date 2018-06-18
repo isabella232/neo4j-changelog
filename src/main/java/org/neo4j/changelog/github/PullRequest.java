@@ -10,5 +10,6 @@ public interface PullRequest {
     @Nonnull String getCommit();
     @Nonnull List<String> getVersionFilter();
     @Nonnull List<String> getLabelFilter();
-    @Nonnull String getChangeText();
+    @Nonnull String getChangeTextHeader();
+    @Nonnull String getChangeTextBody();
 }

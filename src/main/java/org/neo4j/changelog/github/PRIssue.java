@@ -15,9 +15,9 @@ public class PRIssue implements PullRequest {
 
     public static final Pattern CHANGELOG_PATTERN = Pattern.compile("^(cl|changelog)\\b[\\s:]*(.*)$",
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-    public static final Pattern METADATA_PATTERN = Pattern.compile("^\\[(.*?)\\]");
+    public static final Pattern METADATA_PATTERN = Pattern.compile("^\\[(.*?)]");
     public static final Pattern VERSION_PATTERN = Pattern.compile("^\\s*\\d+\\.\\d+\\s*$");
-    public static final Pattern MESSAGE_PATTERN = Pattern.compile("^(?:\\[.*?\\])?\\s*(.*?)\\s*$", Pattern.DOTALL);
+    public static final Pattern MESSAGE_PATTERN = Pattern.compile("^(?:\\[.*?])?\\s*(.*?)\\s*$", Pattern.DOTALL);
 
     final int number;
     final String title;
@@ -31,7 +31,8 @@ public class PRIssue implements PullRequest {
     final List<String> labels;
     private ArrayList<String> versionFilter = null;
     private ArrayList<String> labelFilter = null;
-    private String changeText = null;
+    private String changeTextHeader = null;
+    private String changeTextBody = null;
     private final boolean includeAuthor;
 
     public PRIssue(int number, String title, String body, String html_url, String username, String userlink,
@@ -93,9 +94,10 @@ public class PRIssue implements PullRequest {
     private void parseMetaData(boolean includeAuthor) {
         versionFilter = new ArrayList<>();
         labelFilter = new ArrayList<>();
-        changeText = addLink(title);
+        changeTextHeader = addLink(title);
+        changeTextBody = body;
         if (includeAuthor) {
-            changeText = addAuthor(changeText);
+            changeTextHeader = addAuthor(changeTextHeader);
         }
 
         Matcher matcher = CHANGELOG_PATTERN.matcher(body);
@@ -110,11 +112,11 @@ public class PRIssue implements PullRequest {
                 String msg = msgMatch.group(1);
                 if (!msg.trim().isEmpty()) {
                     if (includeAuthor) {
-                        changeText = Util.formatChangeText(msg,
+                        changeTextHeader = Util.formatChangeText(msg,
                                 String.format("[\\#%d](%s)", number, html_url),
                                 String.format("([%s](%s))", username, userlink));
                     } else {
-                        changeText = Util.formatChangeText(msg,
+                        changeTextHeader = Util.formatChangeText(msg,
                                 String.format("[\\#%d](%s)", number, html_url));
                     }
                 }
@@ -134,6 +136,9 @@ public class PRIssue implements PullRequest {
                     }
                 }
             }
+
+            // Extract body text without changelog metadata
+            changeTextBody = CHANGELOG_PATTERN.matcher(body).replaceAll("");
         }
 
         if (labelFilter.isEmpty()) {
@@ -147,12 +152,22 @@ public class PRIssue implements PullRequest {
 
     @Nonnull
     @Override
-    public String getChangeText() {
-        if (changeText == null) {
+    public String getChangeTextHeader() {
+        if (changeTextHeader == null) {
             parseMetaData(includeAuthor);
         }
-        return changeText;
+        return changeTextHeader;
     }
+
+    @Nonnull
+    @Override
+    public String getChangeTextBody() {
+        if (changeTextBody == null) {
+            parseMetaData(includeAuthor);
+        }
+        return changeTextBody;
+    }
+
 
     String addLink(@Nonnull String text) {
         return String.format("%s [\\#%d](%s)", text.trim(), number, html_url);

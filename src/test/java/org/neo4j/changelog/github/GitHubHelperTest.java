@@ -71,8 +71,14 @@ public class GitHubHelperTest {
 
             @Nonnull
             @Override
-            public String getChangeText() {
+            public String getChangeTextHeader() {
                 return "bah";
+            }
+
+            @Nonnull
+            @Override
+            public String getChangeTextBody() {
+                return "nah";
             }
         };
     }
@@ -114,8 +120,14 @@ public class GitHubHelperTest {
 
             @Nonnull
             @Override
-            public String getChangeText() {
+            public String getChangeTextHeader() {
                 return "bah";
+            }
+
+            @Nonnull
+            @Override
+            public String getChangeTextBody() {
+                return "nah";
             }
         };
     }

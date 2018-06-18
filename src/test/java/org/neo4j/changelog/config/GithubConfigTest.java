@@ -5,6 +5,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +23,7 @@ public class GithubConfigTest {
         Map<String, Object> settings = new HashMap<>();
 
         settings.put("bahs", "bobo");
-        settings.put("user", "abc");
+        settings.put("users", Arrays.asList("abc", "def"));
         settings.put("repo", "abc");
 
         GithubConfig.from(settings);
@@ -31,7 +33,7 @@ public class GithubConfigTest {
     public void testDefault() throws Exception {
         GithubConfig c = new GithubConfig();
 
-        assertEquals("", c.getUser());
+        assertEquals(Collections.emptyList(), c.getUsers());
         assertEquals("", c.getRepo());
         assertEquals("", c.getToken());
         assertEquals(false, c.getIncludeAuthor());
@@ -43,7 +45,7 @@ public class GithubConfigTest {
 
         GithubConfig c = GithubConfig.from(minSettings);
 
-        assertEquals("", c.getUser());
+        assertEquals(Collections.emptyList(), c.getUsers());
         assertEquals("", c.getRepo());
         assertEquals("", c.getToken());
         assertEquals(false, c.getIncludeAuthor());

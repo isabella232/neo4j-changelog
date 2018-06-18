@@ -17,7 +17,7 @@ public class Util {
 
 @Nonnull
     public static String formatChangeText(@Nonnull String msg, @Nonnull List<String> additions) {
-        return formatChangeText(msg, additions.toArray(new String[additions.size()]));
+        return formatChangeText(msg, additions.toArray(new String[0]));
     }
 
     @Nonnull

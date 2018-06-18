@@ -1,19 +1,20 @@
 package org.neo4j.changelog.config;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class GithubConfig {
 
-    public static final String USER = "user";
+    public static final String USERS = "users";
     public static final String REPO = "repo";
     public static final String TOKEN = "token";
     public static final String LABELS = "labels";
     private static final String INCLUDE_AUTHOR = "include_author";
-    private static final List<Object> VALID_KEYS = Arrays.asList(USER, REPO, TOKEN, INCLUDE_AUTHOR, LABELS);
-    private String user = "";
+    private static final List<Object> VALID_KEYS = Arrays.asList(USERS, REPO, TOKEN, INCLUDE_AUTHOR, LABELS);
+    private List<String> users = new ArrayList<>();
     private String repo = "";
     private String token = "";
     private boolean includeAuthor = false;
@@ -26,7 +27,9 @@ public class GithubConfig {
         validateKeys(map);
         GithubConfig githubConfig = new GithubConfig();
 
-        githubConfig.user = (map.getOrDefault(USER, "").toString());
+        if (map.containsKey(USERS)) {
+            githubConfig.users = (List) (map.get(USERS));
+        }
         githubConfig.repo = (map.getOrDefault(REPO, "").toString());
         githubConfig.token = (map.getOrDefault(TOKEN, "").toString());
 
@@ -59,8 +62,8 @@ public class GithubConfig {
     }
 
     @Nonnull
-    public String getUser() {
-        return user;
+    public List<String> getUsers() {
+        return users;
     }
 
     @Nonnull
@@ -87,6 +90,6 @@ public class GithubConfig {
     }
 
     public boolean hasUserAndRepo() {
-        return !user.isEmpty() && !repo.isEmpty();
+        return !users.isEmpty() && !repo.isEmpty();
     }
 }

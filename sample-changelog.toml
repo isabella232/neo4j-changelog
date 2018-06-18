@@ -74,8 +74,15 @@
 ## log.
 #include_author = false
 
+## Set this to false if you want to exclude PR links from the change
+## log.
+# include_link = true
+
 ## Combined to form the url where pull requests are fetched from
 #user = ""
+#repo = ""
+## or to fetch from multiple sources, use
+#users = ["",""]
 #repo = ""
 
 ## Settings related to github labels go in this section

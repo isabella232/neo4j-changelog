@@ -9,15 +9,18 @@ import java.util.Map;
 public class GithubConfig {
 
     public static final String USERS = "users";
+    public static final String USER = "user";
     public static final String REPO = "repo";
     public static final String TOKEN = "token";
     public static final String LABELS = "labels";
     private static final String INCLUDE_AUTHOR = "include_author";
-    private static final List<Object> VALID_KEYS = Arrays.asList(USERS, REPO, TOKEN, INCLUDE_AUTHOR, LABELS);
+    private static final String INCLUDE_LINK = "include_link";
+    private static final List<Object> VALID_KEYS = Arrays.asList(USERS, USER, REPO, TOKEN, INCLUDE_AUTHOR, INCLUDE_LINK, LABELS);
     private List<String> users = new ArrayList<>();
     private String repo = "";
     private String token = "";
     private boolean includeAuthor = false;
+    private boolean includeLink = true;
     private GithubLabelsConfig labels = new GithubLabelsConfig();
 
     public GithubConfig() {
@@ -26,6 +29,10 @@ public class GithubConfig {
     public static GithubConfig from(@Nonnull Map<String, Object> map) {
         validateKeys(map);
         GithubConfig githubConfig = new GithubConfig();
+
+        if (map.containsKey(USER)) {
+            githubConfig.users.add(map.get(USER).toString());
+        }
 
         if (map.containsKey(USERS)) {
             githubConfig.users = (List) (map.get(USERS));
@@ -38,6 +45,12 @@ public class GithubConfig {
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(
                     String.format("'%s' in [github] should be a boolean", INCLUDE_AUTHOR), e);
+        }
+        try {
+            githubConfig.includeLink = (boolean) map.getOrDefault(INCLUDE_LINK, githubConfig.includeLink);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException(
+                    String.format("'%s' in [github] should be a boolean", INCLUDE_LINK), e);
         }
 
         if (map.containsKey(LABELS)) {
@@ -91,5 +104,9 @@ public class GithubConfig {
 
     public boolean hasUserAndRepo() {
         return !users.isEmpty() && !repo.isEmpty();
+    }
+
+    public boolean getIncludeLink() {
+        return includeLink;
     }
 }

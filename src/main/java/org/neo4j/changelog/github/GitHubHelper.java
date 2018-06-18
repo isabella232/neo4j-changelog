@@ -26,12 +26,14 @@ public class GitHubHelper {
     @Nonnull
     private final GithubLabelsConfig labels;
     private final boolean includeAuthor;
+    private final boolean includeLink;
 
     public GitHubHelper(@Nonnull String token, @Nonnull List<String> users, @Nonnull String repo, boolean includeAuthor,
-                        @Nonnull GithubLabelsConfig labels) {
+                        boolean includeLink, @Nonnull GithubLabelsConfig labels) {
         service = GitHubService.GetService(token);
         this.users = users;
         this.repo = repo;
+        this.includeLink = includeLink;
         this.labels = labels;
         this.includeAuthor = includeAuthor;
 
@@ -104,7 +106,7 @@ public class GitHubHelper {
                     })
                     .map(issue -> {
                         GitHubService.PR pr = getPr(user, issue.number);
-                        return new PRIssue(issue, pr, labels.getCategoryMap(), includeAuthor);
+                        return new PRIssue(issue, pr, labels.getCategoryMap(), includeAuthor, includeLink);
                     })
                     .filter(pr -> isIncludedInVersion(pr, labels.getVersionPrefix()))
                     .collect(Collectors.toList());

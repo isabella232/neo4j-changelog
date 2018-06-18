@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class GithubConfigTest {
     @Rule
@@ -36,7 +36,8 @@ public class GithubConfigTest {
         assertEquals(Collections.emptyList(), c.getUsers());
         assertEquals("", c.getRepo());
         assertEquals("", c.getToken());
-        assertEquals(false, c.getIncludeAuthor());
+        assertFalse(c.getIncludeAuthor());
+        assertTrue(c.getIncludeLink());
     }
 
     @Test
@@ -48,12 +49,13 @@ public class GithubConfigTest {
         assertEquals(Collections.emptyList(), c.getUsers());
         assertEquals("", c.getRepo());
         assertEquals("", c.getToken());
-        assertEquals(false, c.getIncludeAuthor());
+        assertFalse(c.getIncludeAuthor());
+        assertTrue(c.getIncludeLink());
     }
 
     @Test
     public void testSetToken() throws Exception {
-        Map minSettings = new HashMap();
+        Map<String, Object> minSettings = new HashMap<>();
 
         GithubConfig c = GithubConfig.from(minSettings);
 

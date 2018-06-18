@@ -14,27 +14,36 @@ public class PRIssueTest {
     @Test
     public void addAuthor() throws Exception {
         PRIssue pr = getPrIssue(1243, "    This is the title    ", "   This is the body   ",
-                "http://test.com/test", true);
+                "http://test.com/test", true, false);
 
         // Should have author appended at end
-        assertEquals("This is the title [\\#1243](http://test.com/test) ([spacecowboy](http://space))",
-                pr.addAuthor(pr.addLink(pr.title)));
+        assertEquals("This is the title ([spacecowboy](http://space))",
+                pr.addAuthor(pr.title));
     }
 
     @Test
     public void addLink() throws Exception {
         PRIssue pr = getPrIssue(1243, "    This is the title    ", "   This is the body   ",
-                "http://test.com/test", false);
+                "http://test.com/test", false, true);
 
         // Should have link appended at end
         assertEquals("This is the title [\\#1243](http://test.com/test)", pr.addLink(pr.title));
     }
 
     @Test
+    public void addBoth() throws Exception {
+        PRIssue pr = getPrIssue(1243, "    This is the title    ", "   This is the body   ",
+                "http://test.com/test", true, true);
+
+        // Should have link appended at end
+        assertEquals("This is the title [\\#1243](http://test.com/test) ([spacecowboy](http://space))", pr.addAuthor(pr.addLink(pr.title)));
+    }
+
+    @Test
     public void defaultValuesIfNoOverrides() throws Exception {
         PRIssue pr = getPrIssue(1, "title", "Blab la\n" +
                         "balb lba",
-                Arrays.asList("kernel", "cypher"), false);
+                Arrays.asList("kernel", "cypher"), false, true);
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertEquals(Arrays.asList("kernel", "cypher"),
@@ -52,7 +61,7 @@ public class PRIssueTest {
 
     @Test
     public void getVersionAndChangeTextNoCLWithAuthor() throws Exception {
-        PRIssue pr = getPrIssue(1, "title", "body", "http://test.com/link", true);
+        PRIssue pr = getPrIssue(1, "title", "body", "http://test.com/link", true, true);
 
         assertTrue(pr.getVersionFilter().isEmpty());
         assertEquals(pr.title + " [\\#1](http://test.com/link) ([spacecowboy](http://space))", pr.getChangeTextHeader());
@@ -88,7 +97,7 @@ public class PRIssueTest {
                 "balb lba\n" +
                 "changelog:\n" +
                 "Message follows",
-                "http://test.com/link", true);
+                "http://test.com/link", true, true);
 
         assertTrue(pr.getLabelFilter().isEmpty());
         assertTrue(pr.getVersionFilter().isEmpty());
@@ -128,7 +137,7 @@ public class PRIssueTest {
         PRIssue pr = getPrIssue(1, "title", "Blab la\n" +
                 "balb lba\n" +
                 "changelog: [2.2, 2.3]  \n",
-                Arrays.asList("kernel", "cypher"), false);
+                Arrays.asList("kernel", "cypher"), false, true);
 
         assertEquals(Arrays.asList("2.2", "2.3"),
                 pr.getVersionFilter());
@@ -370,18 +379,18 @@ public class PRIssueTest {
     }
 
     private PRIssue getPrIssue(int number, String title, String body) {
-        return getPrIssue(number, title, body, "http://test.com/link", false);
+        return getPrIssue(number, title, body, "http://test.com/link", false, true);
     }
 
-    private PRIssue getPrIssue(int number, String title, String body, List<String> tags, boolean includeAuthor) {
-        return getPrIssue(number, title, body, "http://test.com/link", tags, includeAuthor);
+    private PRIssue getPrIssue(int number, String title, String body, List<String> tags, boolean includeAuthor, boolean includeLink) {
+        return getPrIssue(number, title, body, "http://test.com/link", tags, includeAuthor, includeLink);
     }
 
-    private PRIssue getPrIssue(int number, String title, String body, String html_url, boolean includeAuthor) {
-        return getPrIssue(number, title, body, html_url, Collections.EMPTY_LIST, includeAuthor);
+    private PRIssue getPrIssue(int number, String title, String body, String html_url, boolean includeAuthor, boolean includeLink) {
+        return getPrIssue(number, title, body, html_url, Collections.EMPTY_LIST, includeAuthor, includeLink);
     }
 
-    private PRIssue getPrIssue(int number, String title, String body, String html_url, List<String> tags, boolean includeAuthor) {
-        return new PRIssue(number, title, body, html_url, "spacecowboy", "http://space", "", "", "", tags, includeAuthor);
+    private PRIssue getPrIssue(int number, String title, String body, String html_url, List<String> tags, boolean includeAuthor, boolean includeLink) {
+        return new PRIssue(number, title, body, html_url, "spacecowboy", "http://space", "", "", "", tags, includeAuthor, includeLink);
     }
 }

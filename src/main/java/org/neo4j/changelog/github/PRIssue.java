@@ -34,9 +34,10 @@ public class PRIssue implements PullRequest {
     private String changeTextHeader = null;
     private String changeTextBody = null;
     private final boolean includeAuthor;
+    private final boolean includeLink;
 
     public PRIssue(int number, String title, String body, String html_url, String username, String userlink,
-                   String merged_at, String head, String base, List<String> labels, boolean includeAuthor) {
+                   String merged_at, String head, String base, List<String> labels, boolean includeAuthor, boolean includeLink) {
 
         this.number = number;
         this.title = title;
@@ -49,17 +50,18 @@ public class PRIssue implements PullRequest {
         this.base = base;
         this.labels = labels;
         this.includeAuthor = includeAuthor;
+        this.includeLink = includeLink;
     }
 
     public PRIssue(@Nonnull GitHubService.Issue issue, @Nonnull GitHubService.PR pr,
-                   @Nonnull Map<String, String> categoryMap, boolean includeAuthor) {
+                   @Nonnull Map<String, String> categoryMap, boolean includeAuthor, boolean includeLink) {
         this(pr.number, pr.title, pr.body, pr.html_url, issue.user.login, issue.user.html_url,
                 pr.merged_at, pr.merge_commit_sha, pr.base.sha,
                 issue.labels.stream()
                             .map(l -> l.name)
                             .map(l -> categoryMap.getOrDefault(l, l))
                             .collect(Collectors.toList()),
-                includeAuthor);
+                includeAuthor, includeLink);
     }
 
     @Override
@@ -86,19 +88,22 @@ public class PRIssue implements PullRequest {
     @Override
     public List<String> getVersionFilter() {
         if (versionFilter == null) {
-            parseMetaData(includeAuthor);
+            parseMetaData(includeAuthor, includeLink);
         }
         return versionFilter;
     }
 
-    private void parseMetaData(boolean includeAuthor) {
+    private void parseMetaData(boolean includeAuthor, boolean includeLink) {
         versionFilter = new ArrayList<>();
         labelFilter = new ArrayList<>();
-        changeTextHeader = addLink(title);
-        changeTextBody = body;
+        changeTextHeader = title;
+        if (includeLink) {
+            changeTextHeader = addLink(changeTextHeader);
+        }
         if (includeAuthor) {
             changeTextHeader = addAuthor(changeTextHeader);
         }
+        changeTextBody = body;
 
         Matcher matcher = CHANGELOG_PATTERN.matcher(body);
         if (matcher.find()) {
@@ -111,13 +116,18 @@ public class PRIssue implements PullRequest {
             if (msgMatch.find()) {
                 String msg = msgMatch.group(1);
                 if (!msg.trim().isEmpty()) {
-                    if (includeAuthor) {
+                    if (includeAuthor && includeLink) {
                         changeTextHeader = Util.formatChangeText(msg,
                                 String.format("[\\#%d](%s)", number, html_url),
                                 String.format("([%s](%s))", username, userlink));
-                    } else {
+                    } else if (includeLink) {
                         changeTextHeader = Util.formatChangeText(msg,
                                 String.format("[\\#%d](%s)", number, html_url));
+                    } else if (includeAuthor) {
+                        changeTextHeader = Util.formatChangeText(msg,
+                                String.format("([%s](%s))", username, userlink));
+                    } else {
+                        changeTextHeader = Util.formatChangeText(msg);
                     }
                 }
             }
@@ -154,7 +164,7 @@ public class PRIssue implements PullRequest {
     @Override
     public String getChangeTextHeader() {
         if (changeTextHeader == null) {
-            parseMetaData(includeAuthor);
+            parseMetaData(includeAuthor, includeLink);
         }
         return changeTextHeader;
     }
@@ -163,7 +173,7 @@ public class PRIssue implements PullRequest {
     @Override
     public String getChangeTextBody() {
         if (changeTextBody == null) {
-            parseMetaData(includeAuthor);
+            parseMetaData(includeAuthor, includeLink);
         }
         return changeTextBody;
     }
@@ -181,7 +191,7 @@ public class PRIssue implements PullRequest {
     @Override
     public ArrayList<String> getLabelFilter() {
         if (labelFilter == null) {
-            parseMetaData(includeAuthor);
+            parseMetaData(includeAuthor, includeLink);
         }
         return labelFilter;
     }

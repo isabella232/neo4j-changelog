@@ -262,7 +262,7 @@ public class Main {
 
         System.out.printf("Fetching pull requests from github.com/%s/%s\n", users,
                 repo);
-        GitHubHelper gitHubHelper = new GitHubHelper(token, users, repo, config.getIncludeAuthor(), labels);
+        GitHubHelper gitHubHelper = new GitHubHelper(token, users, repo, config.getIncludeAuthor(), config.getIncludeLink(), labels);
 
         List<PullRequest> pullRequests = gitHubHelper.getChangeLogPullRequests();
 

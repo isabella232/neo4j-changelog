@@ -63,4 +63,17 @@ public class GithubConfigTest {
         c.setToken("bob");
         assertEquals("bob", c.getToken());
     }
+
+    @Test
+    public void testUserAndUsers() {
+        exception.expectMessage("'user' and 'users' in [github] cannot be configured at the same time");
+
+        Map<String, Object> settings = new HashMap<>();
+
+        settings.put("user", "abc");
+        settings.put("users", Arrays.asList("abc", "def"));
+        settings.put("repo", "abc");
+
+        GithubConfig.from(settings);
+    }
 }

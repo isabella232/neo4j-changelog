@@ -124,7 +124,7 @@ public class ProjectConfigTest {
         StringBuilder tml = new StringBuilder()
                 .append("subprojects = 1\n")
                 .append("[github]\n")
-                .append("users = ['jonas']\n")
+                .append("user = 'jonas'\n")
                 .append("repo = 'neo4j'\n")
                 .append("[git]\n")
                 .append("to = 'abc'\n");
@@ -149,7 +149,7 @@ public class ProjectConfigTest {
     public void testTokenCarriesThroughToSubProjects() throws Exception {
         StringBuilder tml = new StringBuilder()
                 .append("[github]\n")
-                .append("users = ['jonas']\n")
+                .append("user = 'jonas'\n")
                 .append("repo = 'neo4j'\n")
                 .append("token = 'supertoken'\n")
                 .append("[git]\n")
@@ -187,7 +187,7 @@ public class ProjectConfigTest {
                 .append("categories = ['one','two']\n")
                 // GITHUB
                 .append("[github]\n")
-                .append("users = ['jonas']\n")
+                .append("users = ['jonas','klaren']\n")
                 .append("repo = 'neo4j'\n")
                 .append("token = 'supertoken'\n")
                 .append("include_author = true\n")
@@ -217,7 +217,7 @@ public class ProjectConfigTest {
 
         ProjectConfig c = ProjectConfig.from(Toml.read(tml.toString()));
 
-        assertEquals(Collections.singletonList("jonas"), c.getGithubConfig().getUsers());
+        assertEquals(Arrays.asList("jonas","klaren"), c.getGithubConfig().getUsers());
         assertEquals("neo4j", c.getGithubConfig().getRepo());
         assertEquals("supertoken", c.getGithubConfig().getToken());
         assertEquals(true, c.getGithubConfig().getIncludeAuthor());

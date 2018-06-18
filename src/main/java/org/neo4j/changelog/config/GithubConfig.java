@@ -30,6 +30,11 @@ public class GithubConfig {
         validateKeys(map);
         GithubConfig githubConfig = new GithubConfig();
 
+        if (map.containsKey(USER) && map.containsKey(USERS)) {
+            throw new IllegalArgumentException(
+                    String.format("'%s' and '%s' in [github] cannot be configured at the same time", USER, USERS));
+        }
+
         if (map.containsKey(USER)) {
             githubConfig.users.add(map.get(USER).toString());
         }

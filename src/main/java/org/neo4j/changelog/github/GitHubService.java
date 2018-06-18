@@ -1,6 +1,9 @@
 package org.neo4j.changelog.github;
 
-import okhttp3.*;
+import okhttp3.Cache;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -8,7 +11,6 @@ import retrofit2.http.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.List;
 
@@ -98,6 +100,7 @@ public interface GitHubService {
         public String body;
         public String html_url;
         public String merged_at;
+        public String merge_commit_sha;
         public Ref head;
         public Ref base;
         public User user;

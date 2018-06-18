@@ -54,7 +54,7 @@ public class PRIssue implements PullRequest {
     public PRIssue(@Nonnull GitHubService.Issue issue, @Nonnull GitHubService.PR pr,
                    @Nonnull Map<String, String> categoryMap, boolean includeAuthor) {
         this(pr.number, pr.title, pr.body, pr.html_url, issue.user.login, issue.user.html_url,
-                pr.merged_at, pr.head.sha, pr.base.sha,
+                pr.merged_at, pr.merge_commit_sha, pr.base.sha,
                 issue.labels.stream()
                             .map(l -> l.name)
                             .map(l -> categoryMap.getOrDefault(l, l))

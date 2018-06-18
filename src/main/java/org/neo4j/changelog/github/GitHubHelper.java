@@ -108,7 +108,7 @@ public class GitHubHelper {
                     })
                     .filter(pr -> isIncludedInVersion(pr, labels.getVersionPrefix()))
                     .collect(Collectors.toList());
-            System.out.println("Fetched " + collect.size() + "issues from " + user);
+            System.out.println("Fetched " + collect.size() + " issues from " + user);
             issues.addAll(collect);
         }
 

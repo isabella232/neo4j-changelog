@@ -153,7 +153,7 @@ cl: Some fixes to Load CSV
 ```
 
 A separate PR for the same fix was raised for each of version 3.3, 3.4 and 3.5. 
-To avoid duplicate entriess in the changelogs of 3.4 and 3.5, they should
+To avoid duplicate entries in the changelogs of 3.4 and 3.5, they should
 have these changelog messages, respectively:
 
 ```

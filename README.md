@@ -106,8 +106,8 @@ be used. If no match is found, it is placed under `Misc`.
 Some examples are the best way to illustrate.
 
 A change should be placed under `packaging`, but the change is only
-present on 3.3 and 3.4, e.g. it was a null merge when forward merged
-to 3.5, and we want the changelog to state "Some fixes to Load CSV"
+present in 3.3 and 3.4 (e.g. it was null forward merged
+to 3.5) and we want the changelog to state "Some fixes to Load CSV"
 instead of whatever the PR title is:
 
 ```
@@ -129,6 +129,14 @@ changelog
 Some fixes to Load CSV
 ```
 
+New lines within the changelog message should however be avoided.
+This will cause an empty line between `to` and `Load` in the generated changelog:
+
+```
+cl [3.3, 3.4, packaging] Some fixes to 
+Load CSV
+```
+
 Each individual piece is of course optional, so if we are fine with
 the title of PR being listed in the changelog we could just write:
 
@@ -137,11 +145,33 @@ CHANGELOG:[3.3,3.4,packaging]
 ```
 
 The spacing and case don't matter. Similarly, if the PR is already tagged
-correcly and it was not null-merged anywhere, but we are not OK with
+correctly and it was not null-merged anywhere, but we are not OK with
 the title, this would be fine:
 
 ```
 cl: Some fixes to Load CSV
+```
+
+A separate PR for the same fix was raised for each of version 3.3, 3.4 and 3.5. 
+To avoid duplicate entriess in the changelogs of 3.4 and 3.5, they should
+have these changelog messages, respectively:
+
+```
+cl: [3.3] Some fixes to Load CSV
+```
+
+```
+cl: [3.4] Some fixes to Load CSV
+```
+
+```
+cl: [3.5] Some fixes to Load CSV
+```
+
+A PR solves a Github issue, which should be linked to from the changelog:
+
+```
+cl: Fixes an [issue](https://github.com/neo4j/neo4j/issues/12345) with Load CSV
 ```
 
 In case you were wondering, writing nothing will be ignored. These are

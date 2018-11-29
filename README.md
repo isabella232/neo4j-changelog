@@ -83,7 +83,7 @@ Additional meta-data is also parsed from the PR's description.
 It is possible to override the metadata associated with a PR by adding
 some text to the message body of the PR, such as
 
-    changelog: [2.3, packaging] This is a better message
+    changelog: [3.4, packaging] This is a better message
 
 which override the PR's GitHub labels, and the PR title. Versions
 inside the brackets can be used to limit the inclusion of a change in
@@ -106,26 +106,26 @@ be used. If no match is found, it is placed under `Misc`.
 Some examples are the best way to illustrate.
 
 A change should be placed under `packaging`, but the change is only
-present on 2.2 and 2.3, e.g. it was a null merge when forward merged
-to 3.0, and we want the changelog to state "Some fixes to Load CSV"
+present on 3.3 and 3.4, e.g. it was a null merge when forward merged
+to 3.5, and we want the changelog to state "Some fixes to Load CSV"
 instead of whatever the PR title is:
 
 ```
-changelog: [2.2, 2.3, packaging] Some fixes to Load CSV
+changelog: [3.3, 3.4, packaging] Some fixes to Load CSV
 ```
 
 The colon after `changelog` is optional, and it is also OK to write
 `cl` instead, so the following is perfectly equivalent:
 
 ```
-cl [2.2, 2.3, packaging] Some fixes to Load CSV
+cl [3.3, 3.4, packaging] Some fixes to Load CSV
 ```
 
 In fact, we could also have placed it across several lines such as
 
 ```
 changelog
-[2.2, 2.3, packaging]
+[3.3, 3.4, packaging]
 Some fixes to Load CSV
 ```
 
@@ -133,7 +133,7 @@ Each individual piece is of course optional, so if we are fine with
 the title of PR being listed in the changelog we could just write:
 
 ```
-CHANGELOG:[2.2,2.3,packaging]
+CHANGELOG:[3.3,3.4,packaging]
 ```
 
 The spacing and case don't matter. Similarly, if the PR is already tagged

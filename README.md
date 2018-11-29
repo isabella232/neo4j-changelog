@@ -83,7 +83,7 @@ Additional meta-data is also parsed from the PR's description.
 It is possible to override the metadata associated with a PR by adding
 some text to the message body of the PR, such as
 
-    changelog: [2.3, packaging] This is a better message
+    changelog: [3.4, packaging] This is a better message
 
 which override the PR's GitHub labels, and the PR title. Versions
 inside the brackets can be used to limit the inclusion of a change in
@@ -106,42 +106,72 @@ be used. If no match is found, it is placed under `Misc`.
 Some examples are the best way to illustrate.
 
 A change should be placed under `packaging`, but the change is only
-present on 2.2 and 2.3, e.g. it was a null merge when forward merged
-to 3.0, and we want the changelog to state "Some fixes to Load CSV"
+present in 3.3 and 3.4 (e.g. it was null forward merged
+to 3.5) and we want the changelog to state "Some fixes to Load CSV"
 instead of whatever the PR title is:
 
 ```
-changelog: [2.2, 2.3, packaging] Some fixes to Load CSV
+changelog: [3.3, 3.4, packaging] Some fixes to Load CSV
 ```
 
 The colon after `changelog` is optional, and it is also OK to write
 `cl` instead, so the following is perfectly equivalent:
 
 ```
-cl [2.2, 2.3, packaging] Some fixes to Load CSV
+cl [3.3, 3.4, packaging] Some fixes to Load CSV
 ```
 
 In fact, we could also have placed it across several lines such as
 
 ```
 changelog
-[2.2, 2.3, packaging]
+[3.3, 3.4, packaging]
 Some fixes to Load CSV
+```
+
+New lines within the changelog message should however be avoided.
+This will cause an empty line between `to` and `Load` in the generated changelog:
+
+```
+cl [3.3, 3.4, packaging] Some fixes to 
+Load CSV
 ```
 
 Each individual piece is of course optional, so if we are fine with
 the title of PR being listed in the changelog we could just write:
 
 ```
-CHANGELOG:[2.2,2.3,packaging]
+CHANGELOG:[3.3,3.4,packaging]
 ```
 
 The spacing and case don't matter. Similarly, if the PR is already tagged
-correcly and it was not null-merged anywhere, but we are not OK with
+correctly and it was not null-merged anywhere, but we are not OK with
 the title, this would be fine:
 
 ```
 cl: Some fixes to Load CSV
+```
+
+A separate PR for the same fix was raised for each of version 3.3, 3.4 and 3.5. 
+To avoid duplicate entries in the changelogs of 3.4 and 3.5, they should
+have these changelog messages, respectively:
+
+```
+cl: [3.3] Some fixes to Load CSV
+```
+
+```
+cl: [3.4] Some fixes to Load CSV
+```
+
+```
+cl: [3.5] Some fixes to Load CSV
+```
+
+A PR solves a Github issue, which should be linked to from the changelog:
+
+```
+cl: Fixes an [issue](https://github.com/neo4j/neo4j/issues/12345) with Load CSV
 ```
 
 In case you were wondering, writing nothing will be ignored. These are

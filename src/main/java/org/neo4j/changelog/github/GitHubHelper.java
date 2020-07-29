@@ -156,6 +156,8 @@ public class GitHubHelper {
             if (response.isSuccessful()) {
                 return response;
             }
+            System.out.println("listChangeLogIssues call failed for user " + user + ", repo " + repo + " and page " + page);
+
             throw new RuntimeException(response.message());
         } catch (IOException e) {
             throw new RuntimeException(e);

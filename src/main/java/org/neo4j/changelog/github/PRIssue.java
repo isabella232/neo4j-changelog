@@ -105,52 +105,54 @@ public class PRIssue implements PullRequest {
         }
         changeTextBody = body;
 
-        Matcher matcher = CHANGELOG_PATTERN.matcher(body);
-        if (matcher.find()) {
+        if (null != body) {
+            Matcher matcher = CHANGELOG_PATTERN.matcher(body);
+            if (matcher.find()) {
 
-            String rest = matcher.group(2);
+                String rest = matcher.group(2);
 
-            // Look for custom message
-            Matcher msgMatch = MESSAGE_PATTERN.matcher(rest);
+                // Look for custom message
+                Matcher msgMatch = MESSAGE_PATTERN.matcher(rest);
 
-            if (msgMatch.find()) {
-                String msg = msgMatch.group(1);
-                if (!msg.trim().isEmpty()) {
-                    if (includeAuthor && includeLink) {
-                        changeTextHeader = Util.formatChangeText(msg,
-                                String.format("[\\#%d](%s)", number, html_url),
-                                String.format("([%s](%s))", username, userlink));
-                    } else if (includeLink) {
-                        changeTextHeader = Util.formatChangeText(msg,
-                                String.format("[\\#%d](%s)", number, html_url));
-                    } else if (includeAuthor) {
-                        changeTextHeader = Util.formatChangeText(msg,
-                                String.format("([%s](%s))", username, userlink));
-                    } else {
-                        changeTextHeader = Util.formatChangeText(msg);
+                if (msgMatch.find()) {
+                    String msg = msgMatch.group(1);
+                    if (!msg.trim().isEmpty()) {
+                        if (includeAuthor && includeLink) {
+                            changeTextHeader = Util.formatChangeText(msg,
+                                    String.format("[\\#%d](%s)", number, html_url),
+                                    String.format("([%s](%s))", username, userlink));
+                        } else if (includeLink) {
+                            changeTextHeader = Util.formatChangeText(msg,
+                                    String.format("[\\#%d](%s)", number, html_url));
+                        } else if (includeAuthor) {
+                            changeTextHeader = Util.formatChangeText(msg,
+                                    String.format("([%s](%s))", username, userlink));
+                        } else {
+                            changeTextHeader = Util.formatChangeText(msg);
+                        }
                     }
                 }
-            }
 
-            // Look for meta data
-            Matcher metaMatch = METADATA_PATTERN.matcher(rest);
-            if (metaMatch.find()) {
-                String meta = metaMatch.group(1);
-                String[] metaParts = meta.split(",");
+                // Look for meta data
+                Matcher metaMatch = METADATA_PATTERN.matcher(rest);
+                if (metaMatch.find()) {
+                    String meta = metaMatch.group(1);
+                    String[] metaParts = meta.split(",");
 
-                for (String metaPart : metaParts) {
-                    if (isVersion(metaPart)) {
-                        versionFilter.add(metaPart.trim());
-                    } else if (!metaPart.trim().isEmpty()) {
-                        labelFilter.add(metaPart.trim());
+                    for (String metaPart : metaParts) {
+                        if (isVersion(metaPart)) {
+                            versionFilter.add(metaPart.trim());
+                        } else if (!metaPart.trim().isEmpty()) {
+                            labelFilter.add(metaPart.trim());
+                        }
                     }
                 }
-            }
 
-            // Extract body text without changelog metadata
-            changeTextBody = CHANGELOG_PATTERN.matcher(body).replaceAll("");
+                // Extract body text without changelog metadata
+                changeTextBody = CHANGELOG_PATTERN.matcher(body).replaceAll("");
+            }
         }
-
+        
         if (labelFilter.isEmpty()) {
             labelFilter.addAll(getGitHubTags());
         }

@@ -127,6 +127,7 @@ public class GitHubHelper {
             if (response.isSuccessful()) {
                 return response.body();
             }
+            System.out.println("GetPR call failed for user " + user + ", repo " + repo + " and number " + number);
             throw new RuntimeException(response.message());
         } catch (IOException e) {
             throw new RuntimeException(e);

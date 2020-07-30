@@ -35,6 +35,10 @@ public interface GitHubService {
     @GET("/repos/{user}/{repo}/issues/{number}")
     Call<Issue> getIssue(@Path("user") String user, @Path("repo") String repo, @Path("number") int number);
 
+    @GET("/rate_limit")
+    Call<RateLimit> getRateLimit();
+
+
 
     static GitHubService GetService(@Nonnull String token) {
         return GetService(API_URL, token);
@@ -122,5 +126,47 @@ public interface GitHubService {
     class Ref {
         public String ref;
         public String sha;
+    }
+
+    class RateLimit {
+        public Resources resources;
+        public Rate rate;
+    }
+
+    class Resources {
+        public Core core;
+        public Search search;
+        public GraphQl graphQl;
+        public IntegrationManifest integrationManifest;
+    }
+
+    class Core {
+        public int limit;
+        public int remaining;
+        public int reset;
+    }
+
+    class Search {
+        public int limit;
+        public int remaining;
+        public int reset;
+    }
+
+    class GraphQl {
+        public int limit;
+        public int remaining;
+        public int reset;
+    }
+
+    class IntegrationManifest {
+        public int limit;
+        public int remaining;
+        public int reset;
+    }
+
+    class Rate {
+        public int limit;
+        public int remaining;
+        public int reset;
     }
 }

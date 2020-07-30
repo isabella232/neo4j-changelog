@@ -13,11 +13,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static java.lang.System.currentTimeMillis;
 
 /**
  * Miscellaneous utility functions related to GitHub specific things.
  */
 public class GitHubHelper {
+    public static final long ONE_DAY_MILLIS = 24 * 60 * 60 * 1000;
     private static Pattern PAGE_PATTERN = Pattern.compile("page=([0-9]+)>");
 
     private final GitHubService service;
@@ -38,10 +40,31 @@ public class GitHubHelper {
         this.labels = labels;
         this.includeAuthor = includeAuthor;
         callCounter = 0;
+        handleRateLimit();
 
         if (!labels.getVersionPrefix().isEmpty() && !Util.isSemanticVersion(labels.getVersionPrefix())) {
             throw new IllegalArgumentException("version_prefix is not a semantic version: '"
                     + labels.getVersionPrefix() + "'");
+        }
+    }
+
+    private void handleRateLimit() {
+        GitHubService.RateLimit rateLimit = getRateLimit();
+
+        if (rateLimit.resources.core.remaining == 0) {
+            Date resetDate = null;
+            System.out.println("Rate limit has been reached!");
+            long millis = rateLimit.resources.core.reset * 1000;
+            if (millis > currentTimeMillis() - ONE_DAY_MILLIS && millis < currentTimeMillis() + ONE_DAY_MILLIS) {
+                resetDate =  new Date(millis);
+            } else if (millis < ONE_DAY_MILLIS) {
+                resetDate =  new Date(currentTimeMillis() + millis);
+            } else {
+                System.out.println("Something went wrong...");
+            }
+            System.out.println("Will be reset at " + resetDate.toString());
+        } else {
+            System.out.println("Remaining call before rate limit exceeds: " + rateLimit.resources.core.remaining);
         }
     }
 
@@ -131,11 +154,26 @@ public class GitHubHelper {
             if (response.isSuccessful()) {
                 return response.body();
             }
-            System.out.println("GetPR call failed for user " + user + ", repo " + repo + " and number " + number);
+            handleRateLimit();
             throw new RuntimeException(response.message());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Nonnull
+    private GitHubService.RateLimit getRateLimit() {
+        try {
+            Call<GitHubService.RateLimit> call = service.getRateLimit();
+            Response<GitHubService.RateLimit> response = call.execute();
+            if (response.isSuccessful()) {
+                return response.body();
+            }
+            throw new RuntimeException(response.message());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Nonnull
@@ -162,8 +200,8 @@ public class GitHubHelper {
             if (response.isSuccessful()) {
                 return response;
             }
-            System.out.println("listChangeLogIssues call failed for user " + user + ", repo " + repo + " and page " + page);
 
+            handleRateLimit();
             throw new RuntimeException(response.message());
         } catch (IOException e) {
             throw new RuntimeException(e);

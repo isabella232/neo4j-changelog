@@ -15,6 +15,7 @@ public class Handler {
     private static Pattern PAGE_PATTERN = Pattern.compile("page=([0-9]+)>");
 
     private final GitHubService service;
+    private int callCounter = 0;
 
     public Handler(@Nonnull GitHubService service) {
         this.service = service;
@@ -37,7 +38,8 @@ public class Handler {
         Call<List<GitHubService.PR>> call = service.listPRs(user, repo, page);
 
         Response<List<GitHubService.PR>> result = call.execute();
-
+        callCounter++;
+        System.out.println("getPullRequests - callCounter: " + callCounter);
         if (!result.isSuccessful()) {
             throw new RuntimeException(result.errorBody().string());
         }

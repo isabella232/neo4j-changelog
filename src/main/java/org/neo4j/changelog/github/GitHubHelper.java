@@ -54,15 +54,11 @@ public class GitHubHelper {
         if (rateLimit.resources.core.remaining == 0) {
             Date resetDate = null;
             System.out.println("Rate limit has been reached!");
-            long millis = rateLimit.resources.core.reset * 1000;
-            if (millis > currentTimeMillis() - ONE_DAY_MILLIS && millis < currentTimeMillis() + ONE_DAY_MILLIS) {
-                resetDate =  new Date(millis);
-            } else if (millis < ONE_DAY_MILLIS) {
-                resetDate =  new Date(currentTimeMillis() + millis);
-            } else {
-                System.out.println("Something went wrong...");
-            }
+            Date currentDate = new Date(currentTimeMillis());
+            System.out.println("Current time is: " + currentDate);
+            resetDate = new Date(currentTimeMillis() + rateLimit.resources.core.reset/1000);
             System.out.println("Will be reset at " + resetDate.toString());
+            throw new RuntimeException();
         } else {
             System.out.println("Remaining call before rate limit exceeds: " + rateLimit.resources.core.remaining);
         }

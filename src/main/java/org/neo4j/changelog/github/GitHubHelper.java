@@ -126,7 +126,7 @@ public class GitHubHelper {
         try {
             Call<GitHubService.PR> call = service.getPR(user, repo, number);
             callCounter++;
-            System.out.println("Callcounter: " + callCounter);
+            System.out.println("getPr - callcounter: " + callCounter);
             Response<GitHubService.PR> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
@@ -157,7 +157,7 @@ public class GitHubHelper {
         try {
             Call<List<GitHubService.Issue>> call = service.listChangeLogIssues(user, repo, labels.getRequired(), page);
             callCounter++;
-            System.out.println("Callcounter: " + callCounter);
+            System.out.println("listChangeLogIssues - callcounter: " + callCounter);
             Response<List<GitHubService.Issue>> response = call.execute();
             if (response.isSuccessful()) {
                 return response;

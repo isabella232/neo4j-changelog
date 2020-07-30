@@ -27,6 +27,7 @@ public class GitHubHelper {
     private final GithubLabelsConfig labels;
     private final boolean includeAuthor;
     private final boolean includeLink;
+    private int callCounter;
 
     public GitHubHelper(@Nonnull String token, @Nonnull List<String> users, @Nonnull String repo, boolean includeAuthor,
                         boolean includeLink, @Nonnull GithubLabelsConfig labels) {
@@ -36,6 +37,7 @@ public class GitHubHelper {
         this.includeLink = includeLink;
         this.labels = labels;
         this.includeAuthor = includeAuthor;
+        callCounter = 0;
 
         if (!labels.getVersionPrefix().isEmpty() && !Util.isSemanticVersion(labels.getVersionPrefix())) {
             throw new IllegalArgumentException("version_prefix is not a semantic version: '"
@@ -123,6 +125,8 @@ public class GitHubHelper {
     private GitHubService.PR getPr(String user, int number) {
         try {
             Call<GitHubService.PR> call = service.getPR(user, repo, number);
+            callCounter++;
+            System.out.println("Callcounter: " + callCounter);
             Response<GitHubService.PR> response = call.execute();
             if (response.isSuccessful()) {
                 return response.body();
@@ -152,6 +156,8 @@ public class GitHubHelper {
     private Response<List<GitHubService.Issue>> listChangeLogIssues(String user, int page) {
         try {
             Call<List<GitHubService.Issue>> call = service.listChangeLogIssues(user, repo, labels.getRequired(), page);
+            callCounter++;
+            System.out.println("Callcounter: " + callCounter);
             Response<List<GitHubService.Issue>> response = call.execute();
             if (response.isSuccessful()) {
                 return response;
